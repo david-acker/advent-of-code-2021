@@ -1,1 +1,5 @@
-# advent-of-code-2021
+## Advent of Code 2021
+
+#### Languages
+- Day 1: Python
+- Day 2: Go
