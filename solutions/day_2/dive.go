@@ -10,7 +10,6 @@ import (
 )
 
 func main() {
-	// Part One
 	file, err := os.Open("C:/Users/david/source/repos/advent-of-code-2021/input/day_2.txt")
 	if err != nil {
 		log.Fatal(err)
@@ -26,11 +25,19 @@ func main() {
 			CreateInstruction(scanner.Text()))
 	}
 
+	// Part One
 	position := GetFinalPosition(instructions)
 
 	result := position.horizontal * position.vertical
 
-	fmt.Print(result)
+	fmt.Println(result)
+
+	// Part Two
+	position = GetFinalPositionWithAim(instructions)
+
+	result = position.horizontal * position.vertical
+
+	fmt.Println(result)
 }
 
 type Position struct {
@@ -72,6 +79,26 @@ func GetFinalPosition(instructions []Instruction) Position {
 			position.vertical -= instruction.units
 		case Down:
 			position.vertical += instruction.units
+		default:
+		}
+	}
+
+	return position
+}
+
+func GetFinalPositionWithAim(instructions []Instruction) Position {
+	position := Position{0, 0}
+	aim := 0
+
+	for _, instruction := range instructions {
+		switch instruction.direction {
+		case Forward:
+			position.horizontal += instruction.units
+			position.vertical += (aim * instruction.units)
+		case Up:
+			aim -= instruction.units
+		case Down:
+			aim += instruction.units
 		default:
 		}
 	}
