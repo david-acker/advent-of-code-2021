@@ -5,3 +5,4 @@
 - Day 2: Go
 - Day 3: F#
 - Day 4: C#
+- Day 5: TypeScript
