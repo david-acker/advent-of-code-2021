@@ -22,8 +22,8 @@ fn main() {
 }
 
 fn get_cheapest_fuel_cost(positions: &[u32], get_fuel_cost: fn(u32, u32) -> u32) -> u32 {
-    let min = *positions.iter().min().unwrap();
-    let max = *positions.iter().max().unwrap();
+    let min: u32 = *positions.iter().min().unwrap();
+    let max: u32 = *positions.iter().max().unwrap();
 
     let mut cheapest_fuel_cost = u32::MAX;
     for end_position in min..=max {
