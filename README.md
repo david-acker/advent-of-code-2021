@@ -7,3 +7,4 @@
 - Day 4: C#
 - Day 5: TypeScript
 - Day 6: Python
+- Day 7: Rust
