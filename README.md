@@ -9,3 +9,4 @@
 - Day 6: Python
 - Day 7: Rust
 - Day 8: Clojure
+- Day 9: C#
