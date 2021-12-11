@@ -9,7 +9,11 @@ class SmokeBasin
     public static void Main(string[] args)
     {
         var input = File.ReadAllLines(_filePath)
-            .Select(x => x.Trim().ToCharArray())
+            .Select(x => 
+                x.Trim()
+                 .ToCharArray()
+                 .Select(y => Convert.ToInt32(char.GetNumericValue(y)))
+                 .ToArray())
             .ToArray();
 
         int height = input.Count();
@@ -143,12 +147,11 @@ class SmokeBasin
         public int RiskLevel => Height + 1;
         public bool Processed { get; set; } = false;
 
-        public Point(int x, int y, char height)
+        public Point(int x, int y, int height)
         {
             X = x;
             Y = y;
-
-            Height = Convert.ToInt32(char.GetNumericValue(height));
+            Height = height;
         }
     }
 }
