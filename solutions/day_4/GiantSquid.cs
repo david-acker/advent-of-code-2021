@@ -86,7 +86,7 @@ class GiantSquidBingo
                 .Select(x => x.Select(x => x.Trim()).Select(int.Parse).Select(x => new BoardNumber(x)).ToArray())
                 .ToArray();
 
-            // Transpose board number rows in columns
+            // Transpose board number rows into columns
             for (int x = 0; x < 5; x++)
             {
                 _columns[x] = new BoardNumber[5];

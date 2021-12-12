@@ -2,7 +2,7 @@ use std::fs;
 
 fn main() {
     let file_name = r"C:\Users\david\source\repos\advent-of-code-2021\input\day_7.txt";
-    let input: Vec<u32> =
+    let starting_positions: Vec<u32> =
         fs::read_to_string(&file_name)
             .unwrap()
             .lines()
@@ -13,11 +13,11 @@ fn main() {
             .collect();
 
     // Part One
-    let cheapest_fixed_fuel_cost = get_cheapest_fuel_cost(&input, get_fixed_fuel_cost);
+    let cheapest_fixed_fuel_cost = get_cheapest_fuel_cost(&starting_positions, get_fixed_fuel_cost);
     println!("{:?}", cheapest_fixed_fuel_cost);
 
     // Part Two
-    let cheapest_increasing_fuel_cost = get_cheapest_fuel_cost(&input, get_increasing_fuel_cost);
+    let cheapest_increasing_fuel_cost = get_cheapest_fuel_cost(&starting_positions, get_increasing_fuel_cost);
     println!("{:?}", cheapest_increasing_fuel_cost);
 }
 
