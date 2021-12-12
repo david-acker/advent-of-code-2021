@@ -61,37 +61,20 @@ public class PassagePathing {
 
         private HashMap<String, List<String>> caveConnectionMap = new HashMap<>();
 
+        private boolean visitSmallCavesTwice = false;
+
         public SimulationContext(HashMap<String, List<String>> caveConnectionMap) {
             this.caveConnectionMap = caveConnectionMap;
         }
 
-        public int GetTotalPathCount(boolean canVisitSmallCaveTwice) {
-            HashSet<String> visitedCaves = new HashSet<>(Arrays.asList(startingCave));
-
-            return canVisitSmallCaveTwice
-                ? GetTotalPathCountForCaveForPartTwo(startingCave, visitedCaves, false)
-                : GetTotalPathCountForCaveForPartOne(startingCave, visitedCaves);
+        public int GetTotalPathCount(boolean canVisitSmallCavesTwice) {
+            visitSmallCavesTwice = canVisitSmallCavesTwice;
+            return GetTotalPathCountForCave(startingCave,
+                new HashSet<>(Arrays.asList(startingCave)),
+                false);
         }
 
-        private int GetTotalPathCountForCaveForPartOne(String cave, HashSet<String> visitedCaves) {
-            if (cave.equals(endingCave)) {
-                return 1;
-            }
-
-            int totalPaths = 0;
-            for (String nextCave : caveConnectionMap.get(cave)) {
-                boolean wasVisited = visitedCaves.contains(nextCave);
-
-                if (!wasVisited || IsBigCave(nextCave)) {
-                    totalPaths += GetTotalPathCountForCaveForPartOne(nextCave,
-                        GetUpdatedVisitedCaves(visitedCaves, nextCave));
-                }
-            }
-
-            return totalPaths;
-        }
-
-        private int GetTotalPathCountForCaveForPartTwo(String cave, HashSet<String> visitedCaves, boolean hasVisitedSmallCaveTwice) {
+        private int GetTotalPathCountForCave(String cave, HashSet<String> visitedCaves, boolean hasVisitedSmallCaveTwice) {
             if (cave.equals(endingCave)) {
                 return 1;
             }
@@ -102,11 +85,11 @@ public class PassagePathing {
 
                 boolean isBigCave = IsBigCave(nextCave);
                 if (!wasVisited || isBigCave) {
-                    totalPaths += GetTotalPathCountForCaveForPartTwo(nextCave,
+                    totalPaths += GetTotalPathCountForCave(nextCave,
                         GetUpdatedVisitedCaves(visitedCaves, nextCave),
                         hasVisitedSmallCaveTwice);
-                } else if (!isBigCave && !nextCave.equals(startingCave) && !hasVisitedSmallCaveTwice) {
-                    totalPaths += GetTotalPathCountForCaveForPartTwo(nextCave, visitedCaves, true);
+                } else if (visitSmallCavesTwice && !isBigCave && !nextCave.equals(startingCave) && !hasVisitedSmallCaveTwice) {
+                    totalPaths += GetTotalPathCountForCave(nextCave, visitedCaves, true);
                 }
             }
 
