@@ -11,3 +11,4 @@
 - Day 8: Clojure (half-way done)
 - Day 9: C#
 - Day 10: Go
+- Day 11: TypeScript
