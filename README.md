@@ -12,3 +12,4 @@
 - Day 9: C#
 - Day 10: Go
 - Day 11: TypeScript
+- Day 12: Java
