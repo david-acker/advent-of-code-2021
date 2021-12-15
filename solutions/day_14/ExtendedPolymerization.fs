@@ -20,7 +20,7 @@ let getInstructions(polymer: string, pairRules: list<string * string>): list<int
     |> List.map (fun (pair, element) -> 
         getInsertionIndices(polymer, pair)
         |> List.map (fun index -> (polymer.Length - index - 1, element)))
-    |> List.collect (fun x -> x)
+    |> List.collect id
 
 let insertElement(polymer: string, reverseIndex: int, element: string): string =
     let insertionIndex: int = polymer.Length - reverseIndex - 1
