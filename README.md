@@ -8,7 +8,7 @@
 - Day 5: TypeScript
 - Day 6: Python
 - Day 7: Rust
-- Day 8: Clojure (half-way done)
+- Day 8: Clojure
 - Day 9: C#
 - Day 10: Go
 - Day 11: TypeScript
