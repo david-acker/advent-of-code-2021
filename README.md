@@ -17,3 +17,5 @@
 - Day 14: F#
 - Day 15: C#
 - Day 16: Python
+- Day 17: -
+- Day 18: Python
