@@ -165,7 +165,6 @@ largest_magnitude = 0
 for first_number, second_number in list(itertools.permutations(snailfish_numbers, 2)):
     node = Node([ast.literal_eval(first_number), ast.literal_eval(second_number)])
     
-    magnitude = node.reduce().magnitude
-    largest_magnitude = max(node.magnitude, largest_magnitude)
+    largest_magnitude = max(node.reduce().magnitude, largest_magnitude)
 
 print(f"Part Two Result: {largest_magnitude}")
