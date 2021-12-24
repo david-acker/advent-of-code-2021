@@ -17,7 +17,7 @@
        (map get-starting-position)))
 
 ;; Shared functions
-(defn get-rolls [start]
+(defn get-deterministic-rolls [start]
   (->> (range 0 3)
        (map (fn [x] (+ start x)))
        (map (fn [x] (+ (rem (- x 1) 100) 1)))))
@@ -32,18 +32,18 @@
       (assoc p :pos new-position)
       (assoc p :score new-score))))
 
-(defn has-won [player]
-  (>= (:score player) 1000))
+(defn has-won [player threshold]
+  (>= (:score player) threshold))
 
 ;; Part One
 (defn play-game [playing waiting starting-roll total-rolls]
-  (let [rolls         (get-rolls starting-roll)
+  (let [rolls         (get-deterministic-rolls starting-roll)
         moved-player  (move-player playing (reduce + rolls))
         ;; Get input values for next turn
         total-rolls   (+ total-rolls 3)
         starting-roll (+ (last rolls) 1)]
     (cond
-      (>= (:score moved-player) 1000) [(:score waiting) total-rolls]
+      (has-won moved-player 1000) [(:score waiting) total-rolls]
       :else (recur waiting moved-player starting-roll total-rolls))))
 
 (defn get-part-one-result [start-one start-two]
