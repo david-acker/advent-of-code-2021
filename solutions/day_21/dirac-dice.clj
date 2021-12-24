@@ -22,29 +22,33 @@
        (map (fn [x] (+ start x)))
        (map (fn [x] (+ (rem (- x 1) 100) 1)))))
 
+(def get-deterministic-rolls-memo (memoize get-deterministic-rolls))
+
 (defn get-position [start roll-total]
   (+ (rem (- (+ start roll-total) 1) 10) 1))
 
+(def get-position-memo (memoize get-position))
+
 (defn move-player [player roll-total]
-  (let [new-position   (get-position (:pos player) roll-total)
+  (let [new-position   (get-position-memo (:pos player) roll-total)
         new-score      (+ (:score player) new-position)]
-    (as-> player p
-      (assoc p :pos new-position)
-      (assoc p :score new-score))))
+    (-> player
+      (assoc :pos new-position)
+      (assoc :score new-score))))
 
 (defn has-won [player threshold]
   (>= (:score player) threshold))
 
 ;; Part One
-(defn play-game [playing waiting starting-roll total-rolls]
-  (let [rolls         (get-deterministic-rolls starting-roll)
-        moved-player  (move-player playing (reduce + rolls))
-        ;; Get input values for next turn
+(defn play-game [p1 p2 starting-roll total-rolls]
+  (let [rolls         (get-deterministic-rolls-memo starting-roll)
+        p1            (move-player p1 (reduce + rolls))
+        ;; Input values for next turn
         total-rolls   (+ total-rolls 3)
         starting-roll (+ (last rolls) 1)]
-    (cond
-      (has-won moved-player 1000) [(:score waiting) total-rolls]
-      :else (recur waiting moved-player starting-roll total-rolls))))
+    (if (has-won p1 1000)
+      [(:score p2) total-rolls]
+      (recur p2 p1 starting-roll total-rolls))))
 
 (defn get-part-one-result [start-one start-two]
   (let [player-one                 {:pos start-one :score 0}
