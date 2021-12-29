@@ -16,44 +16,74 @@
   (->> input-data
        (map get-starting-position)))
 
+(def p1-start (nth starting-positions 0))
+(def p2-start (nth starting-positions 1))
+
 ;; Shared functions
-(defn get-deterministic-rolls [start]
-  (->> (range 0 3)
-       (map (fn [x] (+ start x)))
-       (map (fn [x] (+ (rem (- x 1) 100) 1)))))
+(def get-position
+  (memoize (fn [start-position roll]
+             (+ (rem (- (+ start-position roll) 1) 10) 1))))
 
-(def get-deterministic-rolls-memo (memoize get-deterministic-rolls))
-
-(defn get-position [start roll-total]
-  (+ (rem (- (+ start roll-total) 1) 10) 1))
-
-(def get-position-memo (memoize get-position))
-
-(defn move-player [player roll-total]
-  (let [new-position   (get-position-memo (:pos player) roll-total)
+(defn move [player roll]
+  (let [new-position   (get-position (:pos player) roll)
         new-score      (+ (:score player) new-position)]
-    (-> player
-      (assoc :pos new-position)
-      (assoc :score new-score))))
+    {:pos new-position :score new-score}))
 
-(defn has-won [player threshold]
-  (>= (:score player) threshold))
+(defn has-won [player winning-score]
+  (>= (:score player) winning-score))
 
 ;; Part One
-(defn play-game [p1 p2 starting-roll total-rolls]
-  (let [rolls         (get-deterministic-rolls-memo starting-roll)
-        p1            (move-player p1 (reduce + rolls))
+(def get-deterministic-rolls
+  (memoize (fn [start-roll]
+             (->> (range 0 3)
+                  (map (fn [x] (+ start-roll x)))
+                  (map (fn [x] (+ (rem (- x 1) 100) 1)))))))
+
+(defn play-game [p1 p2 starting-roll roll-counter]
+  (let [roll-numbers  (get-deterministic-rolls starting-roll)
+        roll          (reduce + roll-numbers)
+        moved-p1      (move p1 roll)
         ;; Input values for next turn
-        total-rolls   (+ total-rolls 3)
-        starting-roll (+ (last rolls) 1)]
-    (if (has-won p1 1000)
-      [(:score p2) total-rolls]
-      (recur p2 p1 starting-roll total-rolls))))
+        roll-counter  (+ roll-counter 3)
+        starting-roll (+ (last roll-numbers) 1)]
+    (if (has-won moved-p1 1000)
+      [(:score p2) roll-counter]
+      (recur p2 moved-p1 starting-roll roll-counter))))
 
-(defn get-part-one-result [start-one start-two]
-  (let [player-one                 {:pos start-one :score 0}
-        player-two                 {:pos start-two :score 0}
-        [losing-score total-rolls] (play-game player-one player-two 1 0)]
-    (* losing-score total-rolls)))
+(defn get-part-one-result [p1-start p2-start]
+  (let [p1             {:pos p1-start :score 0}
+        p2             {:pos p2-start :score 0}
+        [losing-score 
+         roll-counter] (play-game p1 p2 1 0)]
+    (* losing-score roll-counter)))
 
-(println (get-part-one-result (first starting-positions) (last starting-positions)))
+(println (get-part-one-result p1-start p2-start))
+
+;; Part Two
+(def roll-frequencies
+  (frequencies (for [n1 [1 2 3] 
+                     n2 [1 2 3] 
+                     n3 [1 2 3]] 
+                 (+ n1 n2 n3))))
+
+(defn get-total-wins [[t1 t2] [v1 v2]]
+  [(+ t1 v1) (+ t2 v2)])
+
+(def count-wins
+  (memoize (fn [p1 p2]
+             (if (has-won p2 21)
+               [0 1]
+               (let [wins (for [[roll freq] roll-frequencies
+                                :let [moved-p1          (move p1 roll)
+                                      [p1-wins p2-wins] (count-wins p2 moved-p1)]]
+                            [(* p2-wins freq)
+                             (* p1-wins freq)])]
+                 (reduce get-total-wins wins))))))
+
+(defn get-part-two-result [p1-start p2-start]
+  (let [p1         {:pos p1-start :score 0}
+        p2         {:pos p2-start :score 0}
+        win-counts (count-wins p1 p2)]
+    (apply max win-counts)))
+
+(println (get-part-two-result p1-start p2-start))
