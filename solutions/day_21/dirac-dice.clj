@@ -16,28 +16,30 @@
   (->> input-data
        (map get-starting-position)))
 
-(def p1-start (nth starting-positions 0))
-(def p2-start (nth starting-positions 1))
+(def p1-start {:pos (nth starting-positions 0) :score 0})
+(def p2-start {:pos (nth starting-positions 1) :score 0})
+
+(def number-of-spaces 10)
 
 ;; Shared functions
-(def get-position
-  (memoize (fn [start-position roll]
-             (+ (rem (- (+ start-position roll) 1) 10) 1))))
+(defn wrap-around [max-val start offset]
+  (as-> (+ start offset) val
+    (- val 1)
+    (rem val max-val)
+    (+ val 1)))
 
 (defn move [player roll]
-  (let [new-position   (get-position (:pos player) roll)
-        new-score      (+ (:score player) new-position)]
+  (let [new-position (wrap-around number-of-spaces (:pos player) roll)
+        new-score    (+ (:score player) new-position)]
     {:pos new-position :score new-score}))
 
 (defn has-won [player winning-score]
   (>= (:score player) winning-score))
 
 ;; Part One
-(def get-deterministic-rolls
-  (memoize (fn [start-roll]
-             (->> (range 0 3)
-                  (map (fn [x] (+ start-roll x)))
-                  (map (fn [x] (+ (rem (- x 1) 100) 1)))))))
+(defn get-deterministic-rolls [start-roll]
+  (->> (range 0 3)
+       (map #(wrap-around 100 start-roll %))))
 
 (defn play-game [p1 p2 starting-roll roll-counter]
   (let [roll-numbers  (get-deterministic-rolls starting-roll)
@@ -50,11 +52,8 @@
       [(:score p2) roll-counter]
       (recur p2 moved-p1 starting-roll roll-counter))))
 
-(defn get-part-one-result [p1-start p2-start]
-  (let [p1             {:pos p1-start :score 0}
-        p2             {:pos p2-start :score 0}
-        [losing-score 
-         roll-counter] (play-game p1 p2 1 0)]
+(defn get-part-one-result [p1 p2]
+  (let [[losing-score roll-counter] (play-game p1 p2 1 0)]
     (* losing-score roll-counter)))
 
 (println (get-part-one-result p1-start p2-start))
@@ -80,10 +79,7 @@
                              (* p1-wins freq)])]
                  (reduce get-total-wins wins))))))
 
-(defn get-part-two-result [p1-start p2-start]
-  (let [p1         {:pos p1-start :score 0}
-        p2         {:pos p2-start :score 0}
-        win-counts (count-wins p1 p2)]
-    (apply max win-counts)))
+(defn get-part-two-result [p1 p2]
+  (apply max  (count-wins p1 p2)))
 
 (println (get-part-two-result p1-start p2-start))
